@@ -4,8 +4,16 @@ import { cookies } from 'next/headers'
 export function createClient() {
   const cookieStore = cookies()
 
+  let supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://xyz123.supabase.co';
+  if (supabaseUrl && !supabaseUrl.startsWith('http') && supabaseUrl.trim() !== '') {
+    supabaseUrl = 'https://' + supabaseUrl;
+  }
+  if (!supabaseUrl || !supabaseUrl.startsWith('http')) {
+    supabaseUrl = 'https://xyz123.supabase.co';
+  }
+
   return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://xyz123.supabase.co',
+    supabaseUrl,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'fake-anon-key-for-build',
     {
       cookies: {
