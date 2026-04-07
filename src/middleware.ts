@@ -6,9 +6,17 @@ export async function middleware(request: NextRequest) {
     request,
   })
 
+  let supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://xyz123.supabase.co';
+  if (supabaseUrl && !supabaseUrl.startsWith('http') && supabaseUrl.trim() !== '') {
+    supabaseUrl = 'https://' + supabaseUrl;
+  }
+  if (!supabaseUrl || !supabaseUrl.startsWith('http')) {
+    supabaseUrl = 'https://xyz123.supabase.co';
+  }
+
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'fake-anon-key',
     {
       cookies: {
         getAll() {
