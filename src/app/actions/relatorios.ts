@@ -245,3 +245,12 @@ export async function getSanidadeData(flockId: string) {
   }
 }
 
+// Stub implementations to fix build errors for UI pages that aren't hooked up yet
+export async function getReportMovements() { return { data: [] }; }
+export async function getReportMedication() { return { data: [] }; }
+export async function getReportUniformity() { return { data: [] }; }
+export async function getReportVaccination() { return { data: [] }; }
+export async function getReportGrowth() { return { data: [] }; }
+export async function getReportSanitaryHistory() { return { data: [] }; }
+export async function getActiveFlocksForReport() { return { data: [] }; }
+export async function getFlocksByCompany() { return { data: [] }; }
