@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { getFarms } from "@/app/actions/farm";
 import { GranjasList } from "./GranjasList";
 

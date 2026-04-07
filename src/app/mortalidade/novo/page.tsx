@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { getActiveFlocks } from "@/app/actions/mortalidade";
 import { MortalidadeForm } from "./MortalidadeForm";
 import Link from "next/link";

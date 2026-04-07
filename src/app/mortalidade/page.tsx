@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { getMortalityHistory } from "@/app/actions/mortalidade";
 import { MortalidadeClient } from "./MortalidadeClient";
 

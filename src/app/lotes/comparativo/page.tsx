@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { getTopComparisons } from "@/app/actions/lotes";
 import { ComparativoLotesClient } from "./ComparativoLotesClient";
 

@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { getFeedHistory, getActiveFlocks } from "@/app/actions/racao";
 import { RacaoClient } from "./RacaoClient";
 

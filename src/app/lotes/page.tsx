@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { getFlocks } from "@/app/actions/lotes";
 import { LotesClient } from "./LotesClient";
 

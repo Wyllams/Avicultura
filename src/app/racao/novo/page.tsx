@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { getActiveFlocks } from "@/app/actions/racao";
 import { RegistroRacaoClient } from "./RegistroRacaoClient";
 import Link from "next/link";

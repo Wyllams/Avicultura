@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { getFlockOverview, getFlockPreCloseStatus } from "@/app/actions/lotes";
 import { EncerrarLoteClient } from "./EncerrarLoteClient";
 

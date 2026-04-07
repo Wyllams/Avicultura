@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import { FarmForm } from "../../FarmForm";
 import { getFarmDetails } from "@/app/actions/farm";

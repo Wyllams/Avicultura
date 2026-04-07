@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { getWeighingHistory } from "@/app/actions/pesagens";
 import { PesagensHistoricoClient } from "./PesagensHistoricoClient";
 
