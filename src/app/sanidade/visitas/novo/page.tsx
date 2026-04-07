@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -28,8 +28,15 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export default function W30RegistroVisitaTecnicaPage() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
+  return (
+    <Suspense fallback={<div className="flex flex-1 items-center justify-center p-8 text-outline">Carregando formulário...</div>}>
+      <W30RegistroVisitaTecnicaContent />
+    </Suspense>
+  )
+}
+
+function W30RegistroVisitaTecnicaContent() {
+  const router = useRouter();  const searchParams = useSearchParams();
 
   const [farms, setFarms] = useState<FarmOption[]>([]);
   const [selectedFarmId, setSelectedFarmId] = useState<string>("");

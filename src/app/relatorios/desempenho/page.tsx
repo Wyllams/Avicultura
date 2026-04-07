@@ -1,12 +1,13 @@
 "use client";
 
+import { Suspense } from "react";
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { getDesempenhoData } from "@/app/actions/relatorios";
 import { ArrowLeft, Printer, Loader2, Activity, Percent, Scale, Package } from "lucide-react";
 import { toast } from "sonner";
 
-export default function W38DesempenhoPage() {
+function W38DesempenhoPageContent() {
   const searchParams = useSearchParams();
   const flockId = searchParams.get("flockId");
   const router = useRouter();
@@ -167,5 +168,13 @@ export default function W38DesempenhoPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function W38DesempenhoPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center">Carregando...</div>}>
+      <W38DesempenhoPageContent />
+    </Suspense>
   );
 }

@@ -1,12 +1,13 @@
 "use client";
 
+import { Suspense } from "react";
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { getMortalidadeData } from "@/app/actions/relatorios";
 import { ArrowLeft, Printer, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
-export default function W40MortalidadePage() {
+function W40MortalidadePageContent() {
   const searchParams = useSearchParams();
   const flockId = searchParams.get("flockId");
   const router = useRouter();
@@ -140,5 +141,13 @@ export default function W40MortalidadePage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function W40MortalidadePage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center">Carregando...</div>}>
+      <W40MortalidadePageContent />
+    </Suspense>
   );
 }

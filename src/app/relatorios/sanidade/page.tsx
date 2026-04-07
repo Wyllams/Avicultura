@@ -1,12 +1,13 @@
 "use client";
 
+import { Suspense } from "react";
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { getSanidadeData } from "@/app/actions/relatorios";
 import { ArrowLeft, Printer, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
-export default function W41SanidadePage() {
+function W41SanidadePageContent() {
   const searchParams = useSearchParams();
   const flockId = searchParams.get("flockId");
   const router = useRouter();
@@ -143,5 +144,13 @@ export default function W41SanidadePage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function W41SanidadePage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center">Carregando...</div>}>
+      <W41SanidadePageContent />
+    </Suspense>
   );
 }

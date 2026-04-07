@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { 
@@ -135,7 +136,7 @@ const columns = [
   }),
 ];
 
-export default function W29HistoricoVacinacoesPage() {
+function W29HistoricoVacinacoesPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -665,5 +666,13 @@ export default function W29HistoricoVacinacoesPage() {
       </div>
 
     </main>
+  );
+}
+
+export default function W29HistoricoVacinacoesPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center">Carregando...</div>}>
+      <W29HistoricoVacinacoesPageContent />
+    </Suspense>
   );
 }

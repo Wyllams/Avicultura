@@ -1,12 +1,13 @@
 "use client";
 
+import { Suspense } from "react";
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { getBoletimSanitarioData } from "@/app/actions/relatorios";
 import { ArrowLeft, Printer, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
-export default function W37BoletimSanitarioPage() {
+function W37BoletimSanitarioPageContent() {
   const searchParams = useSearchParams();
   const flockId = searchParams.get("flockId");
   const router = useRouter();
@@ -177,5 +178,13 @@ export default function W37BoletimSanitarioPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function W37BoletimSanitarioPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center">Carregando...</div>}>
+      <W37BoletimSanitarioPageContent />
+    </Suspense>
   );
 }

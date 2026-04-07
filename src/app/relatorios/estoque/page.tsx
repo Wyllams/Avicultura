@@ -1,12 +1,13 @@
 "use client";
 
+import { Suspense } from "react";
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { getEstoqueReportData } from "@/app/actions/relatorios";
 import { ArrowLeft, Printer, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
-export default function W39EstoquePage() {
+function W39EstoquePageContent() {
   const searchParams = useSearchParams();
   const farmId = searchParams.get("farmId");
   const router = useRouter();
@@ -119,5 +120,13 @@ export default function W39EstoquePage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function W39EstoquePage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center">Carregando...</div>}>
+      <W39EstoquePageContent />
+    </Suspense>
   );
 }
