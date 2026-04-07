@@ -6,8 +6,8 @@ import { createClient } from '@supabase/supabase-js';
  * NÃO EXPONHA este client no frontend. Apenas server actions e API routes.
  */
 const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://xyz123.supabase.co',
+  process.env.SUPABASE_SERVICE_ROLE_KEY || 'fake-admin-key-for-build',
   {
     auth: {
       autoRefreshToken: false,
