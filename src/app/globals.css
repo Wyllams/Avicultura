@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-background text-foreground font-inter antialiased;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-manrope tracking-tight;
+  }
+}
+
+@layer utilities {
+  .surface-container-lowest {
+    @apply bg-surface-container-lowest;
+  }
+  .surface-container-low {
+    @apply bg-surface-container-low;
+  }
+  .surface {
+    @apply bg-surface;
+  }
+  .surface-container {
+    @apply bg-surface-container;
+  }
+  .surface-container-high {
+    @apply bg-surface-container-high;
+  }
+  .surface-container-highest {
+    @apply bg-surface-container-highest;
+  }
+}
+
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 10mm;
+  }
+
+  body {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    background-color: white !important;
+    color: black !important;
+  }
+
+  main, .flex-1 {
+    overflow: visible !important;
+    height: auto !important;
+  }
+
+  /* Ensure charts and cards print cleanly without breaking across pages when possible */
+  .recharts-wrapper {
+    max-width: 100% !important;
+    max-height: 250px !important;
+  }
+
+  /* Prevent page breaks inside cards */
+  .bg-white {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+}

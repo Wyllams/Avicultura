@@ -1,0 +1,328 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Breed {
+  id          String   @id @default(uuid())
+  companyId   String
+  name        String
+  supplier    String
+  targetGmd   Float
+  targetCa    Float
+  isDefault   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  company     Company  @relation(fields: [companyId], references: [id])
+}
+
+// ==========================================
+// 1. SISTEMA E MULTI-TENANT
+// ==========================================
+
+model Company {
+  id        String   @id @default(uuid())
+  name      String
+  cnpj      String?  @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users  User[]
+  farms  Farm[]
+  breeds Breed[]
+  tasks  Task[]
+}
+
+enum Role {
+  OPERADOR
+  VETERINARIO
+  ADMIN
+}
+
+model User {
+  id        String   @id @default(uuid())
+  authId    String   @unique // Ref to Supabase auth.users
+  companyId String
+  name      String
+  email     String   @unique
+  phone     String?
+  role      Role     @default(OPERADOR)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  company    Company          @relation(fields: [companyId], references: [id])
+  farmAccess UserFarmAccess[]
+  tasks      Task[]
+}
+
+enum AccessLevel {
+  NONE
+  READ_ONLY
+  EDITOR
+}
+
+model UserFarmAccess {
+  id     String      @id @default(uuid())
+  userId String
+  farmId String
+  level  AccessLevel @default(NONE)
+
+  user User @relation(fields: [userId], references: [id])
+  farm Farm @relation(fields: [farmId], references: [id])
+
+  @@unique([userId, farmId])
+}
+
+// ==========================================
+// 2. ESTRUTURA FÍSICA E ALOJAMENTO
+// ==========================================
+
+enum FarmStatus {
+  ATIVO
+  INATIVO
+}
+
+model Farm {
+  id        String     @id @default(uuid())
+  companyId String
+  name      String
+  city      String?
+  state     String?
+  status    FarmStatus @default(ATIVO)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  company    Company          @relation(fields: [companyId], references: [id])
+  barns      Barn[]
+  stockItems StockItem[]
+  userAccess UserFarmAccess[]
+  pnsaAudits PnsaAudit[]
+}
+
+enum BarnStatus {
+  EM_OPERACAO
+  MANUTENCAO
+  INATIVO
+}
+
+model Barn {
+  id        String     @id @default(uuid())
+  farmId    String
+  name      String
+  area      Float      // em m²
+  capacity  Int        // número máximo de aves ideal
+  status    BarnStatus @default(EM_OPERACAO)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  farm   Farm    @relation(fields: [farmId], references: [id])
+  flocks Flock[]
+}
+
+enum FlockStatus {
+  PLANNING
+  ACTIVE
+  CLOSED
+}
+
+model Flock {
+  id            String      @id @default(uuid())
+  barnId        String
+  name          String      @unique // ex: Lote 2026/01
+  breed         String // Linhagem (Ross 308, Cobb 500)
+  housedBirds   Int // quantidade alojada inicial
+  hatchData     DateTime // Data de nascimento/nascimento
+  housingDate   DateTime // Data do alojamento na granja
+  slaughterDate DateTime? // Data de encerramento/abate
+  status        FlockStatus @default(ACTIVE)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  barn Barn @relation(fields: [barnId], references: [id])
+
+  mortalityLogs MortalityLog[]
+  weightLogs    WeightLog[]
+  feedLogs      FeedLog[]
+  vaccineLogs   VaccineLog[]
+  visitLogs     VisitLog[]
+  medicationLogs MedicationLog[]
+  tasks         Task[]
+}
+
+// ==========================================
+// 3. DIÁRIO DE ACOMPANHAMENTO (OFFLINE-FIRST)
+// ==========================================
+
+model MortalityLog {
+  id        String   @id @default(uuid())
+  flockId   String
+  date      DateTime @default(now()) // Dia do registro
+  quantity  Int
+  cause     String? // Ex: "Morte súbita", "Refugo", "Sufocamento"
+  syncId    String?  @unique // UUID do dexie
+  createdAt DateTime @default(now())
+
+  flock Flock @relation(fields: [flockId], references: [id])
+}
+
+model WeightLog {
+  id            String   @id @default(uuid())
+  flockId       String
+  date          DateTime @default(now()) // Dia do registro
+  ageInDays     Int
+  averageWeight Float // Peso médio em gramas
+  sampleSize    Int? // Número de aves pesadas
+  syncId        String?  @unique // UUID do dexie
+  createdAt     DateTime @default(now())
+
+  flock Flock @relation(fields: [flockId], references: [id])
+}
+
+model FeedLog {
+  id         String   @id @default(uuid())
+  flockId    String
+  date       DateTime @default(now()) // Dia do registro
+  feedType   String // Ex: Inicial, Crescimento, Terminação
+  quantityKg Float // Ração consumida
+  syncId     String?  @unique // UUID do dexie
+  createdAt  DateTime @default(now())
+
+  flock Flock @relation(fields: [flockId], references: [id])
+}
+
+// ==========================================
+// 4. SANIDADE E MANEJO
+// ==========================================
+
+model VaccineLog {
+  id          String   @id @default(uuid())
+  flockId     String
+  date        DateTime @default(now())
+  vaccineName String
+  method      String // Ex: Água de bebida, Spray
+  appliedBy   String?
+  syncId      String?  @unique
+  createdAt   DateTime @default(now())
+
+  flock Flock @relation(fields: [flockId], references: [id])
+}
+
+model MedicationLog {
+  id              String   @id @default(uuid())
+  flockId         String
+  date            DateTime @default(now())
+  medicationName  String
+  dosage          String
+  method          String
+  reason          String?
+  appliedBy       String?
+  withdrawalDays  Int?
+  cost            Float?
+  createdAt       DateTime @default(now())
+
+  flock Flock @relation(fields: [flockId], references: [id])
+}
+
+model VisitLog {
+  id           String   @id @default(uuid())
+  flockId      String
+  date         DateTime @default(now())
+  veterinarian String
+  report       String // Resumo ou observações
+  pdfUrl       String? // Relatório anexo (Storage do Supabase)
+  syncId       String?  @unique
+  createdAt    DateTime @default(now())
+
+  flock Flock @relation(fields: [flockId], references: [id])
+}
+
+model PnsaAudit {
+  id               String   @id @default(uuid())
+  farmId           String
+  visitDate        DateTime @default(now())
+  auditor          String
+  waterQuality     String
+  birdNets         String
+  sanitaryBarrier  String
+  pestControl      String
+  compostBin       String
+  traceability     String
+  vehicleRegistry  String
+  complianceScore  Int
+  notes            String?
+  nonConformReasons Json?    @default("{}")
+  createdAt        DateTime @default(now())
+
+  farm Farm @relation(fields: [farmId], references: [id])
+}
+
+// ==========================================
+// 5. ESTOQUE E OPERAÇÃO
+// ==========================================
+
+model StockItem {
+  id          String   @id @default(uuid())
+  farmId      String
+  name        String
+  category    String // Ex: Ração, Medicamento, Insumo Geral
+  unit        String // Ex: kg, dose, litro
+  quantity    Float    @default(0)
+  minQuantity Float?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  farm      Farm            @relation(fields: [farmId], references: [id])
+  movements StockMovement[]
+}
+
+enum MovementType {
+  IN
+  OUT
+}
+
+model StockMovement {
+  id        String       @id @default(uuid())
+  itemId    String
+  type      MovementType
+  quantity  Float
+  reason    String?
+  date      DateTime     @default(now())
+  syncId    String?      @unique
+  createdAt DateTime     @default(now())
+
+  item StockItem @relation(fields: [itemId], references: [id])
+}
+
+model Task {
+  id           String    @id @default(uuid())
+  companyId    String
+  createdBy    String?
+  flockId      String?
+  assignedToId String?
+  title        String
+  description  String?
+  priority     String    @default("LOW")   // HIGH, MEDIUM, LOW
+  status       String    @default("TODO")  // TODO, IN_PROGRESS, DONE
+  location     String?                     // Ex: "Galpão 04 / Lote 228"
+  evidenceUrls String[]  @default([])
+  dueDate      DateTime?
+  completed    Boolean   @default(false)
+  completedAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  flock      Flock?   @relation(fields: [flockId], references: [id])
+  assignedTo User?    @relation(fields: [assignedToId], references: [id])
+  company    Company  @relation(fields: [companyId], references: [id])
+}
