@@ -55,7 +55,7 @@ export default function W41HistoricoSanidadePage() {
         setError(result.error);
         setData(null);
       } else {
-        setData(result.data);
+        setData(result.data ?? null);
       }
     } catch {
       setError("Erro inesperado ao carregar dossiê.");
@@ -137,8 +137,8 @@ export default function W41HistoricoSanidadePage() {
   const statusInfo = STATUS_LABELS[complianceStatus];
 
   return (
-    <main className="flex-1 bg-white animate-in fade-in duration-500 font-inter overflow-y-auto custom-scrollbar p-6 lg:p-10 flex flex-col items-center print:bg-white print:p-4">
-      <div className="w-full max-w-[1400px]">
+    <main className="flex-1 bg-white animate-in fade-in duration-500 font-inter overflow-y-auto custom-scrollbar p-6 lg:p-10 flex flex-col items-center print:bg-white print:block print:p-8">
+      <div className="w-full max-w-[1400px] print:hidden">
 
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 print:hidden">
@@ -301,6 +301,93 @@ export default function W41HistoricoSanidadePage() {
             </div>
 
           </div>
+        </div>
+      </div>
+
+      {/* ===================== PRINT VIEW (TABELA A4) ===================== */}
+      <div className="hidden print:block w-full max-w-[210mm] mx-auto text-black font-inter">
+        <div className="border-b-2 border-black pb-4 mb-6 text-center">
+          <h1 className="text-2xl font-extrabold uppercase tracking-wider text-black">Histórico Sanitário (Dossiê PNSA)</h1>
+          <p className="text-sm font-medium mt-1">
+            {selectedFlockId ? `Lote: ${flocks.find(f => f.id === selectedFlockId)?.name || ""}` : "Unidade: Todos os Lotes ativos"}
+          </p>
+        </div>
+
+        {/* Resumo */}
+        <div className="flex justify-between items-center bg-gray-100 p-4 rounded-lg mb-8 text-sm font-bold border border-gray-300">
+          <div><span className="font-normal text-gray-700">Visitas Técnicas:</span> {totalVisits}</div>
+          <div><span className="font-normal text-gray-700">Vacinas Aplicadas:</span> {totalVaccinations}</div>
+          <div><span className="font-normal text-gray-700">Auditorias PNSA:</span> {totalAudits}</div>
+          <div><span className="font-normal text-gray-700">Status Geral:</span> {statusInfo.label}</div>
+        </div>
+
+        {/* Equipe */}
+        {teamMembers.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-lg font-bold border-b border-gray-400 mb-3 pb-2 text-black">Equipe de Sanidade (Responsáveis)</h2>
+            <table className="w-full text-sm mb-4 border-collapse">
+              <thead>
+                <tr className="bg-gray-100 border border-gray-300">
+                  <th className="border border-gray-300 p-2 text-left font-bold text-black">Nome</th>
+                  <th className="border border-gray-300 p-2 text-left font-bold text-black">Função / Cargo</th>
+                </tr>
+              </thead>
+              <tbody>
+                {teamMembers.map((member, idx) => (
+                  <tr key={idx} className="border border-gray-300">
+                    <td className="border border-gray-300 p-2">{member.name}</td>
+                    <td className="border border-gray-300 p-2">{member.role}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* Timeline Cronograma */}
+        <div className="mb-8">
+          <h2 className="text-lg font-bold border-b border-gray-400 mb-3 pb-2 text-black">Cronograma de Ações Sanitárias</h2>
+          <table className="w-full text-sm border-collapse text-black">
+            <thead>
+              <tr className="bg-gray-100 border border-gray-300">
+                <th className="border border-gray-300 p-2 text-center font-bold font-inter w-24">Data</th>
+                <th className="border border-gray-300 p-2 text-left font-bold font-inter">Tipo</th>
+                <th className="border border-gray-300 p-2 text-left font-bold font-inter">Ação Principal</th>
+                <th className="border border-gray-300 p-2 text-left font-bold font-inter">Detalhes / Responsável</th>
+                <th className="border border-gray-300 p-2 text-left font-bold font-inter text-xs">Observações</th>
+              </tr>
+            </thead>
+            <tbody>
+              {timeline.map(event => (
+                <tr key={event.id} className="border border-gray-300 break-inside-avoid">
+                  <td className="border border-gray-300 p-2 text-center whitespace-nowrap">
+                    {new Date(event.date).toLocaleDateString("pt-BR", { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                  </td>
+                  <td className="border border-gray-300 p-2 font-medium">
+                    {TYPE_CONFIG[event.type]?.label || event.type}
+                  </td>
+                  <td className="border border-gray-300 p-2 font-bold">
+                    {event.title}
+                  </td>
+                  <td className="border border-gray-300 p-2 text-xs leading-relaxed">
+                    {Object.entries(event.details).filter(([_, v]) => v).map(([k, v]) => <span className="block" key={k}><b>{k}:</b> {v}</span>)}
+                  </td>
+                  <td className="border border-gray-300 p-2 text-xs italic text-gray-700">
+                    {event.notes || "-"}
+                  </td>
+                </tr>
+              ))}
+              {timeline.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="border border-gray-300 p-4 text-center text-gray-500">Nenhum evento registrado.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+        
+        <div className="mt-8 text-center text-xs text-gray-500 border-t border-gray-300 pt-4 font-inter print:fixed print:bottom-4 print:w-full">
+           Avicultura | Relatório gerado em: {new Date().toLocaleDateString('pt-BR')} às {new Date().toLocaleTimeString('pt-BR')}
         </div>
       </div>
     </main>
