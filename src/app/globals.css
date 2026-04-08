@@ -62,4 +62,9 @@
     page-break-inside: avoid;
     break-inside: avoid;
   }
+
+  /* Ensure Toaster notifications do not bleed into the PDF */
+  [data-sonner-toaster] {
+    display: none !important;
+  }
 }
