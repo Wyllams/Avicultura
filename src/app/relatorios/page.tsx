@@ -71,7 +71,7 @@ export default function W36CentralRelatoriosPage() {
       icon: <Skull className="w-8 h-8 text-[#1A5E35]" />,
     },
     {
-       type: "sanidade",
+       type: "historico-sanidade",
        title: "Histórico Sanitário",
        desc: "Registro logado de todas as visitas técnicas e receituários.",
        icon: <FileText className="w-8 h-8 text-[#1A5E35]" />,

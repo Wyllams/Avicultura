@@ -231,7 +231,8 @@ export async function getSanidadeData(flockId: string) {
       .eq("id", flockId)
       .single();
 
-    if (error || !flock) throw new Error("Lote não encontrado");
+    if (error) throw new Error(`Erro Supabase: ${JSON.stringify(error)}`);
+    if (!flock) throw new Error("Lote não encontrado");
 
     return { 
       data: {

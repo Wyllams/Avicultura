@@ -292,6 +292,7 @@ export async function createUser(data: {
       email: data.email,
       phone: data.phone || null,
       role: roleMap[data.role] || "OPERADOR",
+      updatedAt: new Date().toISOString(),
     });
 
     if (dbError) {
