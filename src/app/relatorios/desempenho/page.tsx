@@ -71,10 +71,6 @@ function W38DesempenhoPageContent() {
                 <h1 className="text-2xl font-extrabold uppercase tracking-widest text-[#0D2E1A]">Relatório de Desempenho</h1>
                 <p className="text-xs font-bold text-outline uppercase mt-1">Fechamento Zootécnico do Lote</p>
              </div>
-             <div className="text-right">
-                <span className="block text-[10px] uppercase font-black tracking-wider text-outline">Lote</span>
-                <span className="font-bold text-lg text-[#1A5E35]">{reportData.flockName}</span>
-             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-x-8 gap-y-4 mb-10 text-sm bg-surface-container px-6 py-4 rounded-2xl">
@@ -83,8 +79,8 @@ function W38DesempenhoPageContent() {
                 <span className="font-bold">{reportData.farmName}</span>
              </div>
              <div>
-                <span className="block text-[10px] uppercase font-black tracking-wider text-outline">Galpão</span>
-                <span className="font-bold">{reportData.barnName}</span>
+                <span className="block text-[10px] uppercase font-black tracking-wider text-outline">Lote</span>
+                <span className="font-bold">{reportData.flockName}</span>
              </div>
              <div>
                 <span className="block text-[10px] uppercase font-black tracking-wider text-outline">Idade do Lote</span>
